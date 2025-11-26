@@ -1,0 +1,12 @@
+# Local environment variables
+.env
+
+# Mac system files
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
