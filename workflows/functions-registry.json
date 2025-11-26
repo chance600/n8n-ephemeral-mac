@@ -1,0 +1,115 @@
+{
+  "version": "1.0.0",
+  "description": "Registry of all available n8n workflow functions for ephemeral deployment",
+  "functions": [
+    {
+      "id": "gmail-ai-notes",
+      "name": "Gmail to AI Notes Processor",
+      "category": "data-extraction",
+      "description": "Monitors Gmail inbox for AI note-taking app transcripts, extracts content from links, processes with Gemini AI, and creates Google Tasks",
+      "trigger": "schedule",
+      "schedule": "Every 15 minutes",
+      "file": "gmail-ai-notes.json",
+      "enabled": true,
+      "cost": "free",
+      "costDetails": {
+        "gemini": "Free tier: 15 RPM, 1M TPM, 1500 RPD",
+        "gmail": "Free with Google account",
+        "tasks": "Free with Google account"
+      },
+      "dependencies": [
+        "Gmail OAuth2",
+        "Google Gemini API",
+        "Google Tasks OAuth2"
+      ],
+      "nodes": [
+        "Gmail Trigger",
+        "HTTP Request",
+        "Google Gemini Chat Model",
+        "AI Agent",
+        "Google Tasks"
+      ],
+      "tags": ["ai", "notes", "gmail", "automation", "gemini"]
+    },
+    {
+      "id": "google-maps-leads",
+      "name": "Google Maps Lead Generator",
+      "category": "lead-generation",
+      "description": "Searches Google Maps for businesses by query, scrapes contact information, saves to Google Sheets, and sends Telegram notifications",
+      "trigger": "manual",
+      "file": "google-maps-leads.json",
+      "enabled": false,
+      "cost": "free-tier",
+      "costDetails": {
+        "browseract": "Free tier: 100 searches/month",
+        "sheets": "Free with Google account",
+        "telegram": "Free"
+      },
+      "dependencies": [
+        "BrowserAct API Key",
+        "Google Sheets OAuth2",
+        "Telegram Bot Token"
+      ],
+      "nodes": [
+        "Manual Trigger",
+        "HTTP Request (BrowserAct)",
+        "Google Sheets",
+        "Telegram"
+      ],
+      "tags": ["leads", "google-maps", "scraping", "browseract", "outreach"]
+    },
+    {
+      "id": "linkedin-leads",
+      "name": "LinkedIn Lead Generator with Enrichment",
+      "category": "lead-generation",
+      "description": "Searches LinkedIn for prospects using Apify, enriches profiles with Proxycurl, personalizes outreach with AI, and manages campaigns",
+      "trigger": "manual",
+      "file": "linkedin-leads.json",
+      "enabled": false,
+      "cost": "low-cost",
+      "costDetails": {
+        "apify": "Free tier: $5 credit/month",
+        "proxycurl": "$0.01-0.03 per profile",
+        "gemini": "Free tier: 15 RPM",
+        "gmail": "Free"
+      },
+      "dependencies": [
+        "Apify API Token",
+        "Proxycurl API Key",
+        "Google Gemini API",
+        "Gmail OAuth2"
+      ],
+      "nodes": [
+        "Manual Trigger",
+        "HTTP Request (Apify)",
+        "HTTP Request (Proxycurl)",
+        "Google Gemini Chat Model",
+        "Gmail"
+      ],
+      "tags": ["linkedin", "leads", "ai-personalization", "apify", "outreach"],
+      "notes": "Respects LinkedIn ToS by using official APIs. Includes rate limiting and unsubscribe links."
+    }
+  ],
+  "categories": [
+    {
+      "id": "data-extraction",
+      "name": "Data Extraction & Processing",
+      "description": "Functions that extract, parse, and process data from various sources"
+    },
+    {
+      "id": "lead-generation",
+      "name": "Lead Generation & Outreach",
+      "description": "Functions that find, enrich, and contact potential leads"
+    },
+    {
+      "id": "notifications",
+      "name": "Notifications & Alerts",
+      "description": "Functions that send notifications via Telegram, Slack, email, etc."
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2025-01-13",
+    "totalFunctions": 3,
+    "enabledFunctions": 1
+  }
+}
