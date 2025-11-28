@@ -1,0 +1,76 @@
+# ⚙️ n8n Ephemeral Configuration
+# This file configures the n8n ephemeral local runner
+
+# 📦 Version
+version: "1.0.0"
+
+# 🐳 Docker Configuration
+docker:
+  image: "n8nio/n8n:latest"
+  container_name: "n8n-ephemeral"
+  restart_policy: "no"  # Ephemeral - only runs when started
+  
+# 🌐 Network Settings
+network:
+  port: 5678
+  host: "localhost"
+  auto_open_browser: true
+  
+# 💾 Data Persistence
+persistence:
+  enabled: true
+  data_directory: "~/.n8n"
+  backup_directory: "~/.n8n/backups"
+  
+# 🔧 Environment Variables
+environment:
+  N8N_ENCRYPTION_KEY: ""  # Auto-generated on first run
+  N8N_USER_MANAGEMENT_DISABLED: "true"
+  N8N_BASIC_AUTH_ACTIVE: "false"  # Change to true for production
+  N8N_BASIC_AUTH_USER: ""
+  N8N_BASIC_AUTH_PASSWORD: ""
+  WEBHOOK_URL: "http://localhost:5678/"
+  GENERIC_TIMEZONE: "America/Los_Angeles"
+  
+# 📋 Workflow Function Library
+functions:
+  enabled: true
+  auto_import: true
+  registry_file: "workflows/functions-registry.json"
+  workflows_directory: "workflows/"
+  
+# 🔑 Credentials Management
+credentials:
+  # All credentials stored encrypted in ~/.n8n/credentials.json
+  # Configure via n8n UI at http://localhost:5678/credentials
+  required_for_functions:
+    - "gemini_api"         # For Google Gemini AI
+    - "gmail_oauth2"       # For Gmail email operations
+    - "google_maps_api"    # For Maps geocoding
+    
+# 🚀 Startup Options
+startup:
+  wait_for_ready: true
+  ready_timeout: 30  # seconds
+  health_check_interval: 5  # seconds
+  run_health_check: true
+  
+# 🧪 Testing
+testing:
+  enabled: true
+  test_workflows: [
+    "Google Maps to Email Scraper"
+  ]
+  
+# 📊 Logging
+logging:
+  level: "info"  # debug, info, warn, error
+  file: "~/.n8n/n8n.log"
+  
+# 🔄 Backup & Restore
+backup:
+  auto_backup_on_stop: false
+  retention_days: 30
+  include_credentials: true  # Encrypted
+  include_workflows: true
+  include_executions: false  # Large - exclude by default
