@@ -1,0 +1,74 @@
+# 🐳 n8n Ephemeral - Docker Compose Configuration
+# Alternative to shell scripts for running n8n
+# Usage: docker compose up -d
+
+version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n-ephemeral
+    restart: "no"  # Ephemeral - only runs when started
+    
+    ports:
+      - "5678:5678"
+    
+    environment:
+      # Core settings
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      
+      # User management (disabled for local use)
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - N8N_BASIC_AUTH_ACTIVE=false
+      
+      # Webhook URL
+      - WEBHOOK_URL=http://localhost:5678/
+      
+      # Timezone
+      - GENERIC_TIMEZONE=America/Los_Angeles
+      
+      # Executions
+      - EXECUTIONS_PROCESS=main
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+      - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
+      
+      # Workflow settings
+      - WORKFLOWS_DEFAULT_NAME=My Workflow
+      
+      # Load credentials from .env file
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
+    
+    volumes:
+      # Persistent data storage
+      - ~/.n8n:/home/node/.n8n
+      
+      # Optional: Mount workflows directory for easy access
+      # - ./workflows:/home/node/workflows:ro
+    
+    networks:
+      - n8n-network
+    
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  n8n-network:
+    driver: bridge
+
+# Notes:
+# - Data persists in ~/.n8n directory
+# - Use 'docker compose up -d' to start
+# - Use 'docker compose down' to stop
+# - Use 'docker compose logs -f' to view logs
+# - Use 'docker compose restart' to restart
+# - Configure credentials in .env file or n8n UI
