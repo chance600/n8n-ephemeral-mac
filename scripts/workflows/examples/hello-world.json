@@ -1,0 +1,41 @@
+{
+  "name": "Hello World - Basic n8n Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [\n  {\n    \"message\": \"Hello, n8n!\",\n    \"timestamp\": new Date().toISOString(),\n    \"status\": \"success\"\n  }\n];"
+      },
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [450, 300]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "1",
+  "meta": {
+    "instanceId": "unknown"
+  },
+  "versionId": "f1e0ed0a-1234-4567-89ab-cdef01234567"
+}
