@@ -1,0 +1,78 @@
+name: n8n Automation Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  test:
+    name: Test & Validate
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Validate Shell Scripts
+        run: |
+          echo "Validating shell scripts..."
+          for file in scripts/*.sh .githooks/*; do
+            if [[ -f "$file" ]]; then
+              bash -n "$file" || exit 1
+            fi
+          done
+      
+      - name: Validate JSON Files
+        run: |
+          echo "Validating JSON files..."
+          for file in *.json; do
+            if [[ -f "$file" ]]; then
+              python3 -m json.tool "$file" > /dev/null || exit 1
+            fi
+          done
+      
+      - name: Validate YAML Files
+        run: |
+          echo "Validating YAML files..."
+          for file in *.yml *.yaml; do
+            if [[ -f "$file" ]]; then
+              python3 -c "import yaml; yaml.safe_load(open('$file'))" || exit 1
+            fi
+          done
+
+  security:
+    name: Security Scan
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Detect secrets
+        run: |
+          echo "Running secret detection..."
+          if grep -rE '(API_KEY|SECRET|PASSWORD|sk_live|pk_live|AIzaSy)' . --include='*.sh' --include='*.json' --include='*.yml'; then
+            echo "WARNING: Potential secrets detected"
+          fi
+
+  summary:
+    name: Build Summary
+    runs-on: macos-latest
+    needs: [test, security]
+    if: always()
+    steps:
+      - name: Build complete
+        run: echo "n8n automation validation complete"
